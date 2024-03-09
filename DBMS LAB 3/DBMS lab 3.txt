@@ -1,0 +1,129 @@
+3. Write an SQL query to list the names of all depositors along with their account number and balance using the AS keyword.
+SELECT D.customer_name, D.account_nummmber, A.balance
+FROM Account AS A, Depositor AS D
+WHERE A.account_number= D.account_number;
+
+4. Write an SQL query to list the names of all depositors along with their account number and balance using the JOIN keyword.
+SELECT depositor.customer_name, depositor.account_number, account.balance
+FROM Account
+JOIN depositor
+WHERE account.account_number= depositor.account_number;
+
+5.Write an SQL query to list the names of all depositors along with their account number and balance using the NATURAL JOIN keyword.
+SELECT depositor.customer_name, depositor.account_number, account.balance
+FROM Account
+NATURAL JOIN Depositor;
+
+6.Write an SQL query to find the names of all customers who have a loan of over 150,000.
+SELECT borrower.customer_name
+FROM loan
+JOIN borrower
+WHERE loan.amount>150000 and borrower.loan_number= loan.loan_number;
+
+7.Write an SQL query to increase all accounts with balances over 100,000 by 6% and all other accounts by 5%.
+UPDATE account
+SET balance= balance*1.06
+where balance>100000;
+UPDATE account
+SET balance= balance*1.05
+where balance<=100000;
+
+8.Write an SQL query to implement the usage of LEFT JOIN and RIGHT JOIN using the above tables.
+SELECT customer.customer_name,depositor.account_number
+FROM customer
+LEFT JOIN depositor
+ON customer.customer_name= depositor.customer_name;
+
+SELECT depositor.customer_name,account.account_number
+FROM depositor
+RIGHT JOIN account
+ON depositor.account_number= account.account_number;
+
+9. Write an SQL query to retrieve the names of customers who have loans along with the loan amounts.
+customer.customer_name, loan.loan_number
+FROM customer
+JOIN borrower
+ON customer.customer_name= borrower.customer_name
+JOIN loan
+ON borrower.loan_number= loan.loan_number;
+
+10.Write an SQL query to retrieve the loan numbers and amounts for loans from branches located in Kathmandu.
+SELECT loan.loan_number, loan.amount
+FROM loan
+JOIN branch
+ON loan.branch_name= branch.branch_name
+WHERE branch.branch_city= "kathmandu";
+
+11.Retrieve the names and balances of customers, sorted by balance in descending order.
+SELECT customer.customer_name, account.balance FROM
+customer JOIN depositor ON customer.customer_name=
+depositor.customer_name JOIN account ON 
+depositor.account_number= account.account_number
+ORDER BY account.balance DESC;
+
+12.Retrieve the names and balances of customers of Kathmandu, sorted by balance in ascending order.
+SELECT customer.customer_name,account.balance
+FROM customer
+JOIN depositor ON customer.customer_name= depositor.customer_name
+JOIN account ON depositor.account_number= account.account_number
+WHERE customer.customer_city="kathmandu"
+ORDER BY account.balance ASC;
+
+13.Retrieve the names of customers who have both loans and deposits, along with their corresponding account numbers.
+SELECT customer.customer_name, depositor.account_number
+FROM customer
+JOIN depositor ON customer.customer_name= depositor.customer_name
+JOIN borrower ON customer.customer_name= borrower.customer_name
+
+14.Calculate the average loan amount for each branch.
+SELECT loan.branch_name,
+AVG(loan.amount)AS average_loan_amount
+FROM loan
+GROUP BY loan.branch_name;
+
+15.Retrieve the names of customers who have loans with amounts greater than 20,000 or deposits with balances greater than 5,000.
+SELECT DISTINCT customer.customer_name
+FROM customer
+JOIN borrower ON customer.customer_name= borrower.customer_name
+JOIN loan ON borrower.loan_number= loan.loan_number
+WHERE loan.loan_number>20000
+UNION
+SELECT DISTINCT customer.customer_name
+FROM customer
+JOIN depositor ON customer.customer_name= depositor.customer_name
+JOIN account ON depositor.account_number= account.account_number
+WHERE account.balance>5000;
+
+16.Calculate the total loan amount for each branch.
+SELECT branch_name, SUM(amount) AS total_loan_amount
+FROM loan
+GROUP BY branch_name;
+
+17.Retrieve the names and balances of accounts where the balance is less than 1,000 or greater than 20,000.
+SELECT customer_name, balance
+FROM Account
+JOIN depositor USING(account_number)
+WHERE balance<1000 OR balance>20000;
+
+18. Calculate the total number of customers who have both loans and deposits.
+SELECT COUNT(DISTINCT customer_name) AS total_customer_with_both
+FROM (
+    SELECT customer_name
+    FROM borrower
+    INTERSECT
+    SELECT customer_name
+    FROM depositor
+    ) AS customer_with_both;
+
+19.Calculate the total number of accounts in each city.
+SELECT branch_city, COUNT(account_number)AS total_accounts
+FROM branch
+JOIN Account ON Branch.branch_name= Account.branch_name
+GROUP BY branch_city;
+
+20.Retrieve the name with the highest deposit.
+SELECT customer.customer_name
+FROM customer
+JOIN depositor ON customer.customer_name = depositor.customer_name
+JOIN account ON depositor.account_number = account.account_number
+WHERE balance = (SELECT MAX(balance) FROM account);
